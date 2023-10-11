@@ -1,0 +1,153 @@
+﻿@page "/"
+@using Business.Classes;
+@inject BookingProcessor bp
+
+<header>
+    <h1 class="display-6 m-5 mx-0 text-center">Welcome to Car Rental booking!</h1>
+</header>
+
+
+<section class="container-fluid">
+    <!--Customers-->
+    <div class="row">
+        <table class="tab3 table caption-top table-hover">
+            <caption>Customers</caption>
+            <thead>
+                <tr class="table-dark">
+                    <th scope="col" class="">SSN</th>
+                    <th scope="col"class="">Last name</th>
+                    <th scope="col" class="">First name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" class="form-control customer" placeholder="SSN" /></td>
+                    <td><input type="text" class="form-control customer" placeholder="Last Name" /></td>
+                    <td class="d-flex justify-content-between align-items-center">
+                        <input type="text" class="form-control customer firstname" placeholder="First Name" />
+                        <button type="button" class="btn customer ml-auto  btn-outline-success">Add</button>
+                    </td>
+                </tr>
+                @foreach (var person in bp.Customers)
+                {
+                    <tr>
+                        <td class="fw-bold">@person.SSN</td>
+                        <td>@person.LastName</td>
+                        <td>@person.FirstName</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!--Vehicles-->
+    <div class="row">
+        <table class="tab1 table table-hover table-borderless caption-top">
+            <caption>Vehicles</caption>
+            <thead>
+                <tr class="table-dark">
+                    <th scope="col">RegNo</th>
+                    <th scope="col">Brand</th>
+                    <th scope="col">Odometer</th>
+                    <th scope="col">Cost km</th>
+                    <th scope="col">Vehicle type</th>
+                    <th scope="col">Daily cost</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" class="form-control vehicle" placeholder="RegNo" /></td>
+                    <td><input type="text" class="form-control vehicle" placeholder="Brand" /></td>
+                    <td><input type="text" class="form-control vehicle" placeholder="" /></td>
+                    <td><input type="text" class="form-control vehicle" placeholder="" /></td>
+                    <td>
+                        <select name="vehicletype" class="form-select vehicletype">
+                                <option>Vehicle type</option>
+                            @foreach (var type in bp.Vehicles)
+                            {
+                                <option>@type.VType</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="dailycost"></td>
+                    <td><button type="button" class="btn add btn-outline-success d-flex">Add</button></td>
+                    <td>
+                        <button type="button" class="btn processing btn-success position-relative
+                                badge border-0 rounded-pill text-bg-warning">Processing</button>
+                    </td>
+                </tr>
+                @foreach (var vehicle in bp.Vehicles)
+                {
+                    <tr>
+                        <td class="fw-bold">@vehicle.RegNo</td>
+                        <td>@vehicle.Brand</td>
+                        <td>@vehicle.Odometer</td>
+                        <td>@vehicle.CostKm</td>
+                        <td>@vehicle.VType</td>
+                        <td>@vehicle.DailyCost</td>
+                        <td>
+                            <select name="rentingcustomer" class="form-select rentingcustomer">
+                                <option>Renting customer</option>
+                                @foreach (var customer in bp.Customers)
+                                {
+                                    <option>@customer.FullName</option>
+                                }
+                            </select>
+                            <button type="button" class="btn rent btn-outline-primary">Rent</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-success position-relative
+                                badge border-0 rounded-pill text-bg-@(vehicle.Status.Equals(bp._vehicleStatus) ? "success" : "danger")">
+                                @vehicle.Status
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!--Bookings-->
+    <div class="row">
+        <table class="tab2 table caption-top table-hover">
+            <caption>Bookings</caption>
+            <thead>
+                <tr class="table-dark">
+                    <th scope="col">RegNo</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Start km</th>
+                    <th scope="col">Returned km</th>
+                    <th scope="col">Rental Date</th>
+                    <th scope="col">Return Date</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in bp.Bookings)
+                {
+                    <tr>
+                        <th class="fw-bold">@booking.Vehicle.RegNo</th>
+                        <td>@booking.Person.FullName</td>
+                        <td>@booking.Vehicle.Odometer</td>
+                        <td>@booking.ReturnedKm</td>
+                        <td>@booking.RentalDate.ToString("dd'/'MM'/'yyyy")</td>
+                        <td>@booking.ReturnDate?.ToString("dd'/'MM'/'yyyy")</td>
+                        <td>@booking.Cost</td>
+                        <td>
+                            <button type="button" class="blue btn btn-sm position-relative
+                                btn-@(booking.Vehicle.Status.Equals(bp._vehicleStatus) ? "success" : "primary")">
+                                @(booking.Vehicle.Status.Equals(bp._vehicleStatus) ? "Returned" : "Open")
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+

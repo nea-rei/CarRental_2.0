@@ -1,0 +1,119 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+caption {
+    font-size: 1.2rem;
+}
+
+table {
+    border: 0.1rem solid;
+}
+
+.table-dark {
+    --bs-table-color: #adb5bd;
+}
+
+.form-control {
+    border-radius: 0em;
+    padding-left: 0.3em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+
+}
+
+.form-select {
+    border-radius: 0em;
+    padding-left: 0.3em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+}
+
+button.rent, button.customer, button.add {
+    padding-left: 0.3em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    font-size: 0.85em;
+}
+
+
+/*Customers*/
+
+table.tab3 {
+    width: 50em;
+}
+
+.form-control.customer {
+    width: 100%;
+    padding-left: 0.3em;
+    margin-right: -0.5em;
+
+}
+
+.firstname {
+    display: inline-block;
+    width: 80% !important;
+}
+
+button.customer {
+    display: inline-block;
+    width: 12%;
+}
+
+/*Vehicles*/
+
+table.tab1 {
+    width: 100em;
+}
+
+.form-control.vehicle {
+    width: 80%;
+}
+
+button.blue {
+    font-size: 0.75em;
+    font-weight: 700;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+    }
+
+.form-select.vehicletype {
+    width: 95%;
+    --bs-btn-bg: #fff;
+    --bs-btn-color: #212529;
+    vertical-align: middle;
+
+}
+
+button.add {
+    width: 15%;
+    margin-top: 0.2em;
+
+}
+
+.form-select.rentingcustomer {
+    display: inline-block;
+    width: 72%;
+    --bs-btn-bg: #fff;
+    --bs-btn-color: #212529;
+}
+
+button.rent {
+    display: inline-block;
+    width: 16%;
+    margin-bottom: 0.1em;
+}
+
+button.processing {
+    width: 90%;
+    padding-right: 1.2em;
+}
+.text-bg-warning {
+    color: #fff!important;
+}
+/*Bookings*/
+table.tab2 {
+    width: 70em;
+}
