@@ -2,9 +2,12 @@
 
 public interface IPerson
 {
-    public int SSN { get; init; }
-    public string LastName { get; init; }
-    public string FirstName { get; init; }
+    public int Id { get; }
+    public string SSN { get; }
+    public string LastName { get; }
+    public string FirstName { get; }
     public string FullName => $"{LastName} {FirstName} ({SSN})";
+
+    void AssignId(int id);
 
 }

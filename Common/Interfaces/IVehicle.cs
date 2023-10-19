@@ -1,15 +1,19 @@
 ﻿using Common.Enums;
 
-namespace Common.Interfaces;
-
-public interface IVehicle
+namespace Common.Interfaces
 {
-    public string RegNo { get; init; }
-    public string Brand { get; init; }
-    public int Odometer { get; set; }
-    public double CostKm { get; set; }
-    public VehicleType VType { get; set; }
-    public int DailyCost { get; set; }
-    public VehicleStatus Status { get; set; }
+    public interface IVehicle
+    {
+        public int Id { get; }
+        public string RegNo { get; }
+        public string Brand { get; }
+        public double Odometer { get; set; }
+        public double CostKm { get; set; }
+        public double DailyCost { get; set; }
+        public VehicleType VType { get; set; }
+        public VehicleStatus Status { get; set; }
 
+        void AssignId(int id);
+        void AssignDailyCost(double dailycost);
+    }
 }

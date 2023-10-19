@@ -2,6 +2,11 @@
 using Common.Enums;
 using Common.Interfaces;
 using Data.Interfaces;
+using Common.Exceptions;
+using System.Reflection;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Data.Classes;
 
@@ -10,51 +15,130 @@ public class CollectionData : IData
     readonly List<IPerson> _persons = new();
     readonly List<IVehicle> _vehicles = new();
     readonly List<IBooking> _bookings = new();
-    public CollectionData() => SeedData();
+
+
+    public int NextVehicleId => _vehicles.Count.Equals(0) ? 1 : _vehicles.Max(x => x.Id) +1;
+    public int NextPersonId => _persons.Count.Equals(0) ? 1 : _persons.Max(p => p.Id) +1;
+    public int NextBookingId => _bookings.Count.Equals(0) ? 1 : _bookings.Max(b => b.Id) + 1;
+
+    public string[] VehicleStatusNames => Enum.GetNames(typeof(VehicleStatus));
+    public string[] VehicleTypeNames => Enum.GetNames(typeof(VehicleType));
+
+    public VehicleType GetVehicleType(string name) => (VehicleType)Enum.Parse(typeof(VehicleType), name);
+
+    public int GetDailyCost(VehicleType type)
+    {
+        int dailycost = 0;
+
+        switch (type)
+        {
+            case VehicleType.Sedan: dailycost = 100;
+                    break;
+            case VehicleType.Van: dailycost = 300;
+                break;
+            case VehicleType.Combi: dailycost = 200;
+                break;
+            case VehicleType.Motorcycle: dailycost = 50;
+                break;
+        };
+
+        return dailycost;
+    }
+    public List<T> Get<T>(Func<T, bool>? lambda = null)
+    {
+        try
+        {
+            var collections = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
+                ?? throw new InvalidOperationException("Unsupported type");
+
+            var value = collections.GetValue(this) ?? throw new InvalidDataException();
+
+            var collection = ((List<T>)value).AsQueryable();
+
+            if (lambda is null) return collection.ToList();
+
+            return collection.Where(lambda).ToList();
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
+    }
+    public T? Single<T>(Func<T, bool>? lambda)
+    {
+        try
+        {
+            if (lambda is null) throw new DataNullException("Could not find item");
+
+            var collections = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
+                ?? throw new InvalidOperationException("Unsupported type");
+
+            var value = collections.GetValue(this) ?? throw new InvalidDataException();//vet här att listan existerar
+
+            var collection = ((List<T>)value).AsQueryable();
+
+            var item = collection.SingleOrDefault(lambda);
+
+            return item ?? throw new InvalidOperationException("More than one matching item found.");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    public void Add<T>(T item)
+    {
+        try
+        {
+            if (item is null) throw new DataNullException("Could not add item");
+
+            var collections = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
+                ?? throw new InvalidOperationException("Unsupported type");
+
+            var value = collections.GetValue(this) ?? throw new InvalidDataException();//vet här att listan existerar och vad den har för värde
+
+            ((List<T>)value).Add(item);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    //public IBooking RentVehicle(int vehicleId, int customerId) { }
+    //public IBooking ReturnVehicle(int vehicleId) { }
+    public CollectionData()
+    {
+        SeedData();
+
+    }
     void SeedData()
     {
 
-        var rentaldate1 = new DateTime(2023, 09, 15);
-        var rentaldate2 = new DateTime(2023, 09, 27);
-        var rentaldate3 = new DateTime(2023, 10, 02);
+        //var rentaldate1 = new DateTime(2023, 09, 15);
+        //var rentaldate2 = new DateTime(2023, 09, 27);
+        //var rentaldate3 = new DateTime(2023, 10, 02);
 
-        var returndate2 = DateTime.Today;
-        var returndate3 = new DateTime(2023, 10, 04);
+        //var returndate2 = DateTime.Today;
+        //var returndate3 = new DateTime(2023, 10, 04);
 
-        var returnedKm2 = 20300;
-        var returnedKm3 = 20500;
+        //var returnedKm2 = 20300;
+        //var returnedKm3 = 20500;
 
-        var person1 = new Person(45123, "Elgh", "Moa");
-        var person2 = new Person(45663, "Fager", "Nils");
-        var person3 = new Person(88563, "Höve", "Anna");
-        _persons.Add(person1);
-        _persons.Add(person2);
-        _persons.Add(person3);
+        _persons.Add(new Customer(1, "45123", "Elgh", "Moa"));
+        _persons.Add(new Customer(2, "45663", "Fager", "Nils"));
+        _persons.Add(new Customer(3, "43463", "Andersson", "Hanna"));
 
-        var vehicle1 = new Car("JUH458", "Volvo", 10000, 1, VehicleType.Combi, 200, VehicleStatus.Booked);
-        var vehicle2 = new Car("MAN985", "Saab", 20000, 1, VehicleType.Sedan, 100, VehicleStatus.Available);
-        var vehicle3 = new Motorcycle("NUJ741", "Yamaha", 20000, 0.5, VehicleType.Motorcycle, 50, VehicleStatus.Available);
-        _vehicles.Add(vehicle1);
-        _vehicles.Add(vehicle2);
-        _vehicles.Add(vehicle3);
-
-        _vehicles.Add(new Car("WEK864", "Tesla", 1000, 3, VehicleType.Sedan, 100, VehicleStatus.Available));
-        _vehicles.Add(new Car("KYT185", "Jeep", 5000, 1.5, VehicleType.Van, 300, VehicleStatus.Available));
-
-        var booking1 = new Booking(person1, vehicle1, rentaldate1);
-        var booking2 = new Booking(person2, vehicle2, returnedKm2, rentaldate2, returndate2);
-        var booking3 = new Booking(person3, vehicle3, returnedKm3, rentaldate3, returndate3);
-
-        booking2.ReturnVehicle(vehicle2);
-        booking3.ReturnVehicle(vehicle3);
-
-        _bookings.Add(booking1);
-        _bookings.Add(booking2);
-        _bookings.Add(booking3);
+        _vehicles.Add(new Car(2, "WEK864", "Tesla", 1000, 3, 100, VehicleType.Sedan, VehicleStatus.Available));
+        _vehicles.Add(new Car(1, "KYT185", "Jeep", 5000, 1.5, 300, VehicleType.Van, VehicleStatus.Available));
+        _vehicles.Add(new Motorcycle(3, "KYT185", "Jeep", 5000, 1.5, 300, VehicleType.Van, VehicleStatus.Available));
 
     }
-
-    public IEnumerable<IPerson> GetPersons() => _persons;
-    public IEnumerable<IVehicle> GetVehicles(VehicleStatus status = default) => _vehicles;
-    public IEnumerable<IBooking> GetBookings() => _bookings;
 }

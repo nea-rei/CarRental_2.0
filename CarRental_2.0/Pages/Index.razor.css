@@ -1,7 +1,10 @@
-﻿* {
+﻿/** {
     box-sizing: border-box;
-}
+}*/
 
+.alert{
+    width: 25em;
+}
 caption {
     font-size: 1.2rem;
 }
@@ -19,6 +22,8 @@ table {
     padding-left: 0.3em;
     padding-top: 0em;
     padding-bottom: 0em;
+    margin-left: -0.3em;
+
 
 }
 
@@ -34,8 +39,11 @@ button.rent, button.customer, button.add {
     padding-top: 0em;
     padding-bottom: 0em;
     font-size: 0.85em;
+    padding-right: 2.4em;
 }
-
+button.customer, button.add {
+    padding-right: 1.9em !important;
+}
 
 /*Customers*/
 

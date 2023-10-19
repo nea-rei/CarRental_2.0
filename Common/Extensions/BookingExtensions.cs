@@ -1,4 +1,6 @@
-﻿namespace Common.Extensions;
+﻿using Common.Interfaces;
+
+namespace Common.Extensions;
 
 public static class BookingExtensions
 {
