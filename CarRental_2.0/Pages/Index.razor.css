@@ -32,6 +32,7 @@ table {
     padding-left: 0.3em;
     padding-top: 0em;
     padding-bottom: 0em;
+    padding-right: 2.9em;
 }
 
 button.rent, button.customer, button.add {
@@ -39,7 +40,7 @@ button.rent, button.customer, button.add {
     padding-top: 0em;
     padding-bottom: 0em;
     font-size: 0.85em;
-    padding-right: 2.4em;
+    padding-right: 1.5em;
 }
 button.customer, button.add {
     padding-right: 1.9em !important;
@@ -75,7 +76,7 @@ table.tab1 {
 }
 
 .form-control.vehicle {
-    width: 80%;
+    width: 7em;
 }
 
 button.blue {
@@ -88,7 +89,7 @@ button.blue {
     }
 
 .form-select.vehicletype {
-    width: 95%;
+    width: 10em;
     --bs-btn-bg: #fff;
     --bs-btn-color: #212529;
     vertical-align: middle;
@@ -96,26 +97,26 @@ button.blue {
 }
 
 button.add {
-    width: 15%;
+    width: 2.5em;
     margin-top: 0.2em;
 
 }
 
 .form-select.rentingcustomer {
     display: inline-block;
-    width: 72%;
+    width: 12em;
     --bs-btn-bg: #fff;
     --bs-btn-color: #212529;
 }
 
 button.rent {
     display: inline-block;
-    width: 16%;
+    width: 3em;
     margin-bottom: 0.1em;
 }
 
 button.processing {
-    width: 90%;
+    width: 7em;
     padding-right: 1.2em;
 }
 .text-bg-warning {

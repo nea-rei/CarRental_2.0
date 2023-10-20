@@ -6,12 +6,11 @@
     <h1 class="display-6 m-5 mx-0 text-center">Welcome to Car Rental booking!</h1>
 </header>
 
-@if (bp.error != string.Empty)
-{
-    <div class="alert alert-danger"><strong>Error </strong>- @bp.error</div>
-}
-
 <section class="container">
+    @if (bp.error != string.Empty)
+    {
+        <div class="alert alert-danger"><strong>Error </strong>- @bp.error</div>
+    }
     <!--Customers-->
     <div class="row">
         <table class="tab3 table caption-top table-hover">
@@ -63,25 +62,46 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><input @bind="bp.regno" type="text" class="form-control vehicle" placeholder="RegNo" /></td>
-                    <td><input @bind="bp.brand" type="text" class="form-control vehicle" placeholder="Brand" /></td>
-                    <td><input @bind="bp.odometer" type="text" class="form-control vehicle" placeholder="" /></td>
-                    <td><input @bind="bp.costkm" type="text" class="form-control vehicle" placeholder="" /></td>
+                    @if (!bp.rent)
+                    {
+                        <td><input @bind="bp.regno" type="text" class="form-control vehicle" placeholder="RegNo" /></td>
+                        <td><input @bind="bp.brand" type="text" class="form-control vehicle" placeholder="Brand" /></td>
+                        <td><input @bind="bp.odometer" type="text" class="form-control vehicle" placeholder=""/></td>
+                        <td><input @bind="bp.costkm" type="text" class="form-control vehicle" placeholder="" /></td>
+                    }
+                    else
+                    {
+                    <td><input @bind="bp.regno" type="text" class="form-control vehicle" placeholder="RegNo" disabled /></td>
+                    <td><input @bind="bp.brand" type="text" class="form-control vehicle" placeholder="Brand" disabled /></td>
+                    <td><input @bind="bp.odometer" type="text" class="form-control vehicle" placeholder="" disabled /></td>
+                    <td><input @bind="bp.costkm" type="text" class="form-control vehicle" placeholder="" disabled /></td>
+                    }
                     <td>
-                        <select class="form-select vehicletype" @bind="bp.type">
-                                <option>Vehicle type</option>
-                            @foreach (var type in bp.VehicleTypeNames)
-                            {
-                                <option value="@type">@type</option>
-                            }
-                        </select>
+                        @if (!bp.rent)
+                        {
+                            <select class="form-select vehicletype" @bind="bp.type">
+                                <option disabled>Vehicle type</option>
+                                 @foreach (var type in bp.VehicleTypeNames)
+                                {
+                                    <option value="@type">@type</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <select class="form-select vehicletype" disabled @bind="bp.type"></select>
+                        }
                     </td>
                     <td class="dailycost"></td>
-                    <td><button type="button" class="btn add btn-outline-success d-flex" @onclick="(() =>
-                            bp.AddVehicle(bp.regno, bp.brand, bp.odometer, bp.costkm, bp.vehicleType, bp.vehicleStatus))">Add</button></td>
                     <td>
-                        <button type="button" class="btn processing btn-success position-relative
-                                badge border-0 rounded-pill text-bg-warning">Processing</button>
+                        <button type="button" class="btn add btn-outline-success d-flex @((!bp.rent) ? " " : "disabled")" @onclick=" (() =>
+                            bp.AddVehicle(bp.regno, bp.brand, bp.odometer, bp.costkm, bp.vehicleType, bp.vehicleStatus))">Add</button>
+                    </td>
+                    <td>
+                            <button type="button" class="btn processing btn-success position-relative
+                                badge border-0 rounded-pill text-bg-warning" style="visibility:@((!bp.rent) ? "hidden" : "visible")">
+                                Processing
+                            </button>
                     </td>
                 </tr>
                 @foreach (var vehicle in bp.GetVehicles())
@@ -94,14 +114,24 @@
                         <td>@vehicle.VType</td>
                         <td>@vehicle.DailyCost</td>
                         <td>
-                            <select name="rentingcustomer" class="form-select rentingcustomer" @bind="bp.customer">
-                                <option>Renting customer</option>
-                                @foreach (var customer in bp.GetCustomers())
-                                {
-                                    <option value="@customer.Id">@customer.FullName</option>
-                                }
-                            </select>
-                            <button type="button" class="btn rent btn-outline-primary">Rent</button>
+                            @if (vehicle.Status.Equals(bp.vehicleStatus))
+                            {
+                                <select class="form-select rentingcustomer" @bind="bp.customer">
+                                        <option selected disabled>Renting Customer</option>
+                                    @foreach (var customer in bp.GetCustomers())
+                                    {
+                                        <option value="@customer.SSN">@customer.FullName</option>
+                                    }
+                                </select>
+
+                                <button type="button" class="btn rent btn-outline-primary @((!bp.rent) ? " " : "disabled")" @* @onclick="(()=>
+                                    bp.RentVehicle(){ vehicle.Id = bp.vehicle, }) *@">Rent</button> @* onclick rentvehicle(), processa i 10 sekunder, *@
+                            }
+                            else
+                            {
+                                <input @bind="bp.distance" type="text" class="form-control vehicle" placeholder="Distance" />
+                                <button type="button" class="btn return btn-outline-success">Return</button> @* onclick renturnvehicle(), uppdatera nuvarande bokning, ändra vehiclestatus till available igen *@
+                            }
                         </td>
                         <td>
                             <button type="button" class="btn btn-success position-relative
