@@ -42,13 +42,7 @@ public class BookingProcessor
     public IEnumerable<IPerson> GetCustomers() => _data.Get<IPerson>();
     public IEnumerable<IBooking> GetBookings() => _data.Get<IBooking>();
 
-    public IBooking? GetBooking(int vehicleId) => _data.Single<IBooking>(v => v.Vehicle.Id == vehicleId);
-    public IPerson? GetPerson(string ssn) => _data.Single<IPerson>(p => p.SSN == ssn);
-
     public IVehicle? GetVehicle(int vehicleId) => _data.Single<IVehicle>(v => v.Id == vehicleId);
-    public IVehicle? GetVehicle(string regno) => _data.Single<IVehicle>(v => v.RegNo == regno);
-
-
     public void Clear()
     {
         ssn = string.Empty;
@@ -136,24 +130,23 @@ public class BookingProcessor
             customerId = Convert.ToInt32(customer);
             if (vehicleId < 1 || customerId < 1) throw new ArgumentException(error);
             processing = true;
-            await Task.Delay(3000);
+            await Task.Delay(5000);
             booking = await Task.Run(() => _data.RentVehicle(vehicleId, customerId));
             processing = false;
             Clear();
-            return booking ?? throw new Exception(error);
+            return booking ?? throw new Exception("Could not rent vehicle");
         }
         catch
         {
             error = "you must choose a customer";
             return nobooking;
         }
-
     }
     public IBooking ReturnVehicle(int vehicleId, string ddistance)
     {
         IBooking booking;
 
-        if (vehicleId < 1) throw new ArgumentException("Could not find vehicle id");
+        if (vehicleId < 1) throw new ArgumentException("Possible null value");
         booking = _data.ReturnVehicle(vehicleId);
 
         try
@@ -171,7 +164,6 @@ public class BookingProcessor
                 booking.ReturnVehicle(booking.Vehicle);
                 booking.StartKm = (double)(booking.ReturnedKm - distance);
             }
-
             UpdateVehicle(vehicleId, distance);
             Clear();
             return booking ?? throw new Exception("Could not return vehicle");
@@ -188,7 +180,7 @@ public class BookingProcessor
         var vehicle = GetVehicle(vehicleId);
         try
         {
-            if (vehicle is null || distance == 0) throw new ArgumentException(error);
+            if (vehicle is null || distance == 0) throw new ArgumentException("Possible null value");
             error = string.Empty;
 
             if (vehicle is not null)
@@ -199,8 +191,8 @@ public class BookingProcessor
         }
         catch
         {
-            error = "could not update vehicle";
+            throw;
         }
-        return vehicle ?? throw new ArgumentException(error);
+        return vehicle ?? throw new Exception("Could not update vehicle");
     }
 }

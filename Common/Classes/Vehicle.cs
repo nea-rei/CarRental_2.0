@@ -6,12 +6,12 @@ namespace Common.Classes;
 public abstract class Vehicle : IVehicle
 {
     public int Id { get; private set; }
-    public string RegNo { get; private set;  } = string.Empty;
-    public string Brand { get; private set; } = string.Empty;
+    public string RegNo { get; init;  } = string.Empty;
+    public string Brand { get; init; } = string.Empty;
     public double Odometer { get; set; }
-    public double CostKm { get; set; }
-    public double DailyCost { get; set; }
-    public VehicleType VType { get; set; }
+    public double CostKm { get; init; }
+    public double DailyCost { get; private set; }
+    public VehicleType VType { get; init; }
     public VehicleStatus Status { get; set; } = default;
 
     public void AssignId(int id) => Id = id;

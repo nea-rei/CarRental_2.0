@@ -47,11 +47,11 @@ button.customer, button.add {
 /*Customers*/
 
 table.tab3 {
-    width: 50em;
+    width: 45em;
 }
 
 .form-control.customer {
-    width: 100%;
+    width: 13em;
     padding-left: 0.3em;
     margin-right: -0.5em;
 
@@ -59,18 +59,19 @@ table.tab3 {
 
 .firstname {
     display: inline-block;
-    width: 80% !important;
 }
 
 button.customer {
     display: inline-block;
-    width: 12%;
+    width: 1em;
+    margin-left: 3em;
+    padding-right: 2.1em !important;
 }
 
 /*Vehicles*/
 
 table.tab1 {
-    width: 100em;
+    width: 80em;
 }
 
 .form-control.vehicle {
@@ -122,20 +123,38 @@ button.rent {
     margin-bottom: 0.1em;
 }
 
+button.status {
+    width: 6em;
+    padding-right: 0.8em;
+    padding-left: 0.8em;
+    pointer-events: none;
+}
+
 button.return {
     display: inline-block;
     width: 3.7em;
     margin-bottom: 0.1em;
+    margin-left: 0.3em;
 }
 
 button.processing {
     width: 7em;
     padding-right: 1.2em;
+    pointer-events: none;
 }
 .text-bg-warning {
     color: #fff!important;
 }
 /*Bookings*/
 table.tab2 {
-    width: 70em;
+    width: 55em;
+}
+button.booking {
+    font-size: 0.75em;
+    font-weight: 700;
+    pointer-events: none;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 0.05em;
+    padding-bottom: 0.05em;
 }

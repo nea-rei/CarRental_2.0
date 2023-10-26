@@ -6,14 +6,14 @@ namespace Common.Interfaces;
 public interface IBooking
 {
     public int Id { get; }
-    public string RegNo { get; }
-    public IPerson Person { get; }
-    public IVehicle Vehicle { get; }
-    public double? ReturnedKm { get; set; }
+    public string RegNo { get; init; }
+    public IPerson Person { get; init; }
+    public IVehicle Vehicle { get; init; }
     public double StartKm { get; set; }
-    public DateTime RentalDate { get; set; }
+    public double? ReturnedKm { get; set; }
+    public DateTime RentalDate { get; init; }
     public DateTime? ReturnDate { get; set; }
-    public double? Cost { get; set; }
+    public double? Cost { get; }
     public VehicleStatus Status { get; set; }
 
     void AssignId(int id);

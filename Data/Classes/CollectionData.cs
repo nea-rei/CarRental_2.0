@@ -4,11 +4,6 @@ using Common.Interfaces;
 using Data.Interfaces;
 using Common.Exceptions;
 using System.Reflection;
-using System.Linq.Expressions;
-using System.Text.RegularExpressions;
-using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Runtime.Intrinsics.X86;
 
 namespace Data.Classes;
 
@@ -17,8 +12,6 @@ public class CollectionData : IData
     readonly List<IPerson> _persons = new();
     readonly List<IVehicle> _vehicles = new();
     readonly List<IBooking> _bookings = new();
-
-
     public int NextVehicleId => _vehicles.Count.Equals(0) ? 1 : _vehicles.Max(x => x.Id) +1;
     public int NextPersonId => _persons.Count.Equals(0) ? 1 : _persons.Max(p => p.Id) +1;
     public int NextBookingId => _bookings.Count.Equals(0) ? 1 : _bookings.Max(b => b.Id) + 1;
@@ -98,7 +91,7 @@ public class CollectionData : IData
                 .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
                 ?? throw new InvalidOperationException("Unsupported type");
 
-            var value = collections.GetValue(this) ?? throw new InvalidDataException();//vet här att listan existerar
+            var value = collections.GetValue(this) ?? throw new InvalidDataException();
 
             var collection = ((List<T>)value).AsQueryable();
 
@@ -153,10 +146,10 @@ public class CollectionData : IData
             var id = NextBookingId;
             booking.AssignId(id);
 
-            if (booking is null) throw new DataNullException("person or vehicle does not exist");
+            if (booking is null) throw new DataNullException("booking does not exist");
                     Add<IBooking>(booking);
 
-            return booking ?? throw new ArgumentException("could not create booking");
+            return booking ?? throw new Exception("could not create booking");
         }
         catch (Exception)
         {
@@ -170,7 +163,7 @@ public class CollectionData : IData
         {
             var booking = Single<IBooking>(v => v.Vehicle.Id == vehicleId && v.Cost.Equals(null));
 
-            return booking ?? throw new ArgumentException("could not find booking");
+            return booking ?? throw new Exception("could not find booking");
         }
         catch (Exception)
         {

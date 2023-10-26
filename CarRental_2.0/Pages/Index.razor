@@ -3,10 +3,10 @@
 @inject BookingProcessor bp
 
 <header>
-    <h1 class="display-6 m-5 mx-0 text-center">Welcome to Car Rental booking!</h1>
+    <h1 class="display-6 m-5 mx-0 text-start">Welcome to Car Rental booking!</h1>
 </header>
 
-<section class="container">
+<section class="container-fluid">
     @if (bp.error != string.Empty)
     {
         <div class="alert alert-danger"><strong>Error </strong>- @bp.error</div>
@@ -26,7 +26,7 @@
                 <tr>
                     <td><input @bind="bp.ssn" type="text" class="form-control customer" placeholder="SSN" /></td>
                     <td><input @bind="bp.lastname" type="text" class="form-control customer" placeholder="Last Name" /></td>
-                    <td class="d-flex justify-content-between align-items-center">
+                    <td>
                         <input @bind="bp.firstname" type="text" class="form-control customer firstname" placeholder="First Name" />
                         <button type="button" class="btn customer ml-auto  btn-outline-success" @onclick="(() => bp.AddCustomer(bp.ssn, bp.lastname, bp.firstname))">Add</button>
                     </td>
@@ -136,14 +136,22 @@
                             }
                             else
                             {
-                                <input @bind="bp._distance" type="text" class="form-control distance" placeholder="Distance" />
-                                <button type="button" class="btn return btn-outline-success"
+                                @if (!bp.processing)
+                                {
+                                    <input @bind="bp._distance" type="text" class="form-control distance" placeholder="Distance" />
+                                }
+                                else
+                                {
+                                    <input @bind="bp._distance" type="text" class="form-control distance" placeholder="Distance" disabled/>
+                                }
+
+                                <button type="button" class="btn return btn-outline-success @((!bp.processing) ? " " : "disabled")"
                                 @onclick="() => bp.ReturnVehicle(vehicle.Id, bp._distance)">Return</button>
                             }
 
                         </td>
                         <td>
-                            <button type="button" class="btn btn-success position-relative
+                            <button type="button" class="btn status btn-success position-relative
                                 badge border-0 rounded-pill text-bg-@(vehicle.Status.Equals(bp.vehicleStatus) ? "success" : "danger")">
                                 @vehicle.Status
                             </button>
@@ -186,7 +194,7 @@
                         <td>@booking.ReturnDate?.ToString("dd'/'MM'/'yyyy")</td>
                         <td>@booking.Cost</td>
                         <td>
-                            <button type="button" class="blue btn btn-sm position-relative
+                            <button type="button" class="btn booking btn-sm position-relative
                                 btn-@(booking.Status.Equals(bp.vehicleStatus) ? "success" : "primary")">
                                 @(booking.Status.Equals(bp.vehicleStatus) ? "Returned" : "Open")
                             </button>

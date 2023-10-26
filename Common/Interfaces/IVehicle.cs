@@ -5,12 +5,12 @@ namespace Common.Interfaces
     public interface IVehicle
     {
         public int Id { get; }
-        public string RegNo { get; }
-        public string Brand { get; }
+        public string RegNo { get; init; }
+        public string Brand { get; init; }
         public double Odometer { get; set; }
-        public double CostKm { get; set; }
-        public double DailyCost { get; set; }
-        public VehicleType VType { get; set; }
+        public double CostKm { get; init; }
+        public double DailyCost { get; }
+        public VehicleType VType { get; init; }
         public VehicleStatus Status { get; set; }
 
         void AssignId(int id);
