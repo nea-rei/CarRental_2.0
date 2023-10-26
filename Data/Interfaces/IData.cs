@@ -21,7 +21,6 @@ public interface IData
     public VehicleType GetVehicleType(string name);
     public int GetDailyCost(VehicleType type);
 
-    //IBooking RentVehicle(int vehicleId, int customerId); VARFÖR DESSA METODER HÄR???
-    //IBooking ReturnVehicle(int vehicleId);
-
+    IBooking RentVehicle(int vehicleId, int customerId);
+    IBooking ReturnVehicle(int vehicleId);
 }

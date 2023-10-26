@@ -18,7 +18,6 @@ public class Booking : IBooking
     public double? Cost { get; set; }
 
     public void AssignId(int id) => Id = id;
-
     public Booking(IPerson person, IVehicle vehicle, DateTime rentaldate)
     {
 
@@ -29,17 +28,8 @@ public class Booking : IBooking
         RentalDate = rentaldate;
         Status = vehicle.Status;
     }
-    public Booking(int id, IPerson person, IVehicle vehicle, DateTime rentaldate)
-    {
-        Id = id;
-        RegNo = vehicle.RegNo;
-        Person = person;
-        Vehicle = vehicle;
-        StartKm = vehicle.Odometer;
-        RentalDate = rentaldate;
-        Status = vehicle.Status;
-    }
-    public Booking(int id, IPerson person, IVehicle vehicle, double returnedkm, DateTime rentaldate, DateTime returndate)
+
+    public Booking(int id, IPerson person, IVehicle vehicle, double startkm, double returnedkm, DateTime rentaldate, DateTime returndate)
     {
         Id = id;
         RegNo = vehicle.RegNo;
@@ -47,8 +37,8 @@ public class Booking : IBooking
         Vehicle = vehicle;
         RentalDate = rentaldate;
         ReturnDate = returndate;
-        StartKm = vehicle.Odometer;
-        ReturnedKm = returnedkm;
+        StartKm = startkm;
+        ReturnedKm = returnedkm ;
         Status = vehicle.Status;
     }
     public void ReturnVehicle(IVehicle vehicle)

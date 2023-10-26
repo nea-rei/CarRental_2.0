@@ -15,5 +15,6 @@ namespace Common.Interfaces
 
         void AssignId(int id);
         void AssignDailyCost(double dailycost);
+        void UpdateStatus(VehicleStatus status);
     }
 }

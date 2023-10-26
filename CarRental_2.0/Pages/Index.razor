@@ -62,7 +62,7 @@
             </thead>
             <tbody>
                 <tr>
-                    @if (!bp.rent)
+                    @if (!bp.processing)
                     {
                         <td><input @bind="bp.regno" type="text" class="form-control vehicle" placeholder="RegNo" /></td>
                         <td><input @bind="bp.brand" type="text" class="form-control vehicle" placeholder="Brand" /></td>
@@ -77,29 +77,29 @@
                     <td><input @bind="bp.costkm" type="text" class="form-control vehicle" placeholder="" disabled /></td>
                     }
                     <td>
-                        @if (!bp.rent)
+                        @if (!bp.processing)
                         {
-                            <select class="form-select vehicletype" @bind="bp.type">
-                                <option disabled>Vehicle type</option>
-                                 @foreach (var type in bp.VehicleTypeNames)
+                            <select class="form-select vehicletype" @bind="bp.vehicletype">
+                                <option selected hidden value="">Choose vehicle</option>
+                                @foreach (var typename in bp.VehicleTypeNames)
                                 {
-                                    <option value="@type">@type</option>
+                                    <option value="@typename">@typename</option>
                                 }
                             </select>
                         }
                         else
                         {
-                            <select class="form-select vehicletype" disabled @bind="bp.type"></select>
+                            <select class="form-select vehicletype" disabled @bind="bp.vehicletype"></select>
                         }
                     </td>
                     <td class="dailycost"></td>
                     <td>
-                        <button type="button" class="btn add btn-outline-success d-flex @((!bp.rent) ? " " : "disabled")" @onclick=" (() =>
-                            bp.AddVehicle(bp.regno, bp.brand, bp.odometer, bp.costkm, bp.vehicleType, bp.vehicleStatus))">Add</button>
+                        <button type="button" class="btn add btn-outline-success d-flex @((!bp.processing) ? " " : "disabled")" @onclick=" (() =>
+                            bp.AddVehicle(bp.regno, bp.brand, bp.odometer, bp.costkm, bp.vehicletype, bp.vehicleStatus))">Add</button>
                     </td>
                     <td>
                             <button type="button" class="btn processing btn-success position-relative
-                                badge border-0 rounded-pill text-bg-warning" style="visibility:@((!bp.rent) ? "hidden" : "visible")">
+                                badge border-0 rounded-pill text-bg-warning" style="visibility:@((!bp.processing) ? "hidden" : "visible")">
                                 Processing
                             </button>
                     </td>
@@ -116,22 +116,31 @@
                         <td>
                             @if (vehicle.Status.Equals(bp.vehicleStatus))
                             {
-                                <select class="form-select rentingcustomer" @bind="bp.customer">
-                                        <option selected disabled>Renting Customer</option>
-                                    @foreach (var customer in bp.GetCustomers())
-                                    {
-                                        <option value="@customer.SSN">@customer.FullName</option>
-                                    }
-                                </select>
+                                @if (!bp.processing)
+                                {
+                                    <select class="form-select rentingcustomer" @bind="bp.customer">
+                                        <option selected hidden value="">Choose customer</option>
+                                        @foreach (var customer in bp.GetCustomers())
+                                        {
+                                            <option value="@customer.Id">@customer.FullName</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select class="form-select rentingcustomer" disabled @bind="bp.customer"></select>
+                                }
 
-                                <button type="button" class="btn rent btn-outline-primary @((!bp.rent) ? " " : "disabled")" @* @onclick="(()=>
-                                    bp.RentVehicle(){ vehicle.Id = bp.vehicle, }) *@">Rent</button> @* onclick rentvehicle(), processa i 10 sekunder, *@
+                                <button type="button" class="btn rent btn-outline-primary @((!bp.processing) ? " " : "disabled")"
+                                @onclick=" async ()=> await bp.RentVehicle(vehicle.Id, bp.customerId)">Rent</button>
                             }
                             else
                             {
-                                <input @bind="bp.distance" type="text" class="form-control vehicle" placeholder="Distance" />
-                                <button type="button" class="btn return btn-outline-success">Return</button> @* onclick renturnvehicle(), uppdatera nuvarande bokning, ändra vehiclestatus till available igen *@
+                                <input @bind="bp._distance" type="text" class="form-control distance" placeholder="Distance" />
+                                <button type="button" class="btn return btn-outline-success"
+                                @onclick="() => bp.ReturnVehicle(vehicle.Id, bp._distance)">Return</button>
                             }
+
                         </td>
                         <td>
                             <button type="button" class="btn btn-success position-relative
@@ -167,15 +176,19 @@
                     <tr>
                         <th class="fw-bold">@booking.Vehicle.RegNo</th>
                         <td>@booking.Person.FullName</td>
-                        <td>@booking.Vehicle.Odometer</td>
+                        <td>
+                            @if (booking.Status.Equals(bp.vehicleStatus))
+                                    @booking.StartKm
+                            else    @booking.Vehicle.Odometer
+                        </td>
                         <td>@booking.ReturnedKm</td>
                         <td>@booking.RentalDate.ToString("dd'/'MM'/'yyyy")</td>
                         <td>@booking.ReturnDate?.ToString("dd'/'MM'/'yyyy")</td>
                         <td>@booking.Cost</td>
                         <td>
                             <button type="button" class="blue btn btn-sm position-relative
-                                btn-@(booking.Vehicle.Status.Equals(bp.vehicleStatus) ? "success" : "primary")">
-                                @(booking.Vehicle.Status.Equals(bp.vehicleStatus) ? "Returned" : "Open")
+                                btn-@(booking.Status.Equals(bp.vehicleStatus) ? "success" : "primary")">
+                                @(booking.Status.Equals(bp.vehicleStatus) ? "Returned" : "Open")
                             </button>
                         </td>
                     </tr>

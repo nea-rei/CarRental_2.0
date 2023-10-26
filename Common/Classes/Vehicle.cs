@@ -15,8 +15,8 @@ public abstract class Vehicle : IVehicle
     public VehicleStatus Status { get; set; } = default;
 
     public void AssignId(int id) => Id = id;
-
     public void AssignDailyCost(double dailycost) => DailyCost = dailycost;
+    public void UpdateStatus(VehicleStatus status) => Status = status;
 
     protected Vehicle(int id, string regno, string brand, double odometer,
         double costkm, double dailycost, VehicleType vtype, VehicleStatus status)

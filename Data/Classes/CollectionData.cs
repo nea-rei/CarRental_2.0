@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Runtime.Intrinsics.X86;
 
 namespace Data.Classes;
 
@@ -24,25 +26,44 @@ public class CollectionData : IData
     public string[] VehicleStatusNames => Enum.GetNames(typeof(VehicleStatus));
     public string[] VehicleTypeNames => Enum.GetNames(typeof(VehicleType));
 
-    public VehicleType GetVehicleType(string name) => (VehicleType)Enum.Parse(typeof(VehicleType), name);
-
+    public VehicleType GetVehicleType(string name)
+    {
+        try
+        {
+            return (VehicleType)Enum.Parse(typeof(VehicleType), name);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
     public int GetDailyCost(VehicleType type)
     {
-        int dailycost = 0;
-
-        switch (type)
+        try
         {
-            case VehicleType.Sedan: dailycost = 100;
+            int dailycost = 0;
+            switch (type)
+            {
+                case VehicleType.Sedan:
+                    dailycost = 100;
                     break;
-            case VehicleType.Van: dailycost = 300;
-                break;
-            case VehicleType.Combi: dailycost = 200;
-                break;
-            case VehicleType.Motorcycle: dailycost = 50;
-                break;
-        };
+                case VehicleType.Van:
+                    dailycost = 300;
+                    break;
+                case VehicleType.Combi:
+                    dailycost = 200;
+                    break;
+                case VehicleType.Motorcycle:
+                    dailycost = 50;
+                    break;
+            };
+            return dailycost;
+        }
+        catch (Exception)
+        {
 
-        return dailycost;
+            throw;
+        }
     }
     public List<T> Get<T>(Func<T, bool>? lambda = null)
     {
@@ -71,7 +92,7 @@ public class CollectionData : IData
     {
         try
         {
-            if (lambda is null) throw new DataNullException("Could not find item");
+            if (lambda is null) throw new DataNullException("could not find lambda expression");
 
             var collections = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
                 .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
@@ -101,7 +122,7 @@ public class CollectionData : IData
                 .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
                 ?? throw new InvalidOperationException("Unsupported type");
 
-            var value = collections.GetValue(this) ?? throw new InvalidDataException();//vet här att listan existerar och vad den har för värde
+            var value = collections.GetValue(this) ?? throw new InvalidDataException();
 
             ((List<T>)value).Add(item);
         }
@@ -112,33 +133,61 @@ public class CollectionData : IData
         }
     }
 
-    //public IBooking RentVehicle(int vehicleId, int customerId) { }
-    //public IBooking ReturnVehicle(int vehicleId) { }
-    public CollectionData()
+    public IBooking RentVehicle(int vehicleId, int customerId)
     {
-        SeedData();
+        try
+        {
+            Random rdm = new();
 
+            var person = Single<IPerson>(p => p.Id == customerId);
+            var vehicle = Single<IVehicle>(v => v.Id == vehicleId);
+            var rentaldate = DateTime.Now.AddDays(-(rdm.Next(1, 9)));
+
+
+            if (person is null || vehicle is null) throw new DataNullException("person or vehicle does not exist");
+
+            vehicle.UpdateStatus(VehicleStatus.Booked);
+
+            var booking = new Booking(person, vehicle, rentaldate);
+
+            var id = NextBookingId;
+            booking.AssignId(id);
+
+            if (booking is null) throw new DataNullException("person or vehicle does not exist");
+                    Add<IBooking>(booking);
+
+            return booking ?? throw new ArgumentException("could not create booking");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
+    public IBooking ReturnVehicle(int vehicleId)
+    {
+        try
+        {
+            var booking = Single<IBooking>(v => v.Vehicle.Id == vehicleId && v.Cost.Equals(null));
+
+            return booking ?? throw new ArgumentException("could not find booking");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    public CollectionData() => SeedData();
     void SeedData()
     {
-
-        //var rentaldate1 = new DateTime(2023, 09, 15);
-        //var rentaldate2 = new DateTime(2023, 09, 27);
-        //var rentaldate3 = new DateTime(2023, 10, 02);
-
-        //var returndate2 = DateTime.Today;
-        //var returndate3 = new DateTime(2023, 10, 04);
-
-        //var returnedKm2 = 20300;
-        //var returnedKm3 = 20500;
-
         _persons.Add(new Customer(1, "45123", "Elgh", "Moa"));
         _persons.Add(new Customer(2, "45663", "Fager", "Nils"));
         _persons.Add(new Customer(3, "43463", "Andersson", "Hanna"));
 
         _vehicles.Add(new Car(2, "WEK864", "Tesla", 1000, 3, 100, VehicleType.Sedan, VehicleStatus.Available));
-        _vehicles.Add(new Car(1, "KYT185", "Jeep", 5000, 1.5, 300, VehicleType.Van, VehicleStatus.Available));
-        _vehicles.Add(new Motorcycle(3, "KYT185", "Jeep", 5000, 1.5, 300, VehicleType.Van, VehicleStatus.Available));
+        _vehicles.Add(new Car(1, "KYT185", "Jeep", 15000, 1.5, 300, VehicleType.Van, VehicleStatus.Available));
+        _vehicles.Add(new Motorcycle(3, "REM321", "Yamaha", 3000, 0.5, 50, VehicleType.Motorcycle, VehicleStatus.Available));
 
     }
 }

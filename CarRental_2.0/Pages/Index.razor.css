@@ -23,8 +23,6 @@ table {
     padding-top: 0em;
     padding-bottom: 0em;
     margin-left: -0.3em;
-
-
 }
 
 .form-select {
@@ -35,7 +33,7 @@ table {
     padding-right: 2.9em;
 }
 
-button.rent, button.customer, button.add {
+button.rent, button.customer, button.add, button.return {
     padding-left: 0.3em;
     padding-top: 0em;
     padding-bottom: 0em;
@@ -89,7 +87,7 @@ button.blue {
     }
 
 .form-select.vehicletype {
-    width: 10em;
+    width: 10.5em;
     --bs-btn-bg: #fff;
     --bs-btn-color: #212529;
     vertical-align: middle;
@@ -104,14 +102,29 @@ button.add {
 
 .form-select.rentingcustomer {
     display: inline-block;
-    width: 12em;
+    width: 11.5em;
     --bs-btn-bg: #fff;
     --bs-btn-color: #212529;
+    margin-right: 0.3em;
+}
+
+.form-control.distance {
+    display: inline-block;
+    width: 11.5em;
+    --bs-btn-bg: #fff;
+    --bs-btn-color: #212529;
+    margin-left: 0.03em;
 }
 
 button.rent {
     display: inline-block;
     width: 3em;
+    margin-bottom: 0.1em;
+}
+
+button.return {
+    display: inline-block;
+    width: 3.7em;
     margin-bottom: 0.1em;
 }
 

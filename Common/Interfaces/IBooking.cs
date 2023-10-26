@@ -17,5 +17,6 @@ public interface IBooking
     public VehicleStatus Status { get; set; }
 
     void AssignId(int id);
+    void ReturnVehicle(IVehicle vehicle);
 
 }
