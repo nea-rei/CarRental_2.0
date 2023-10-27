@@ -62,7 +62,7 @@ public class BookingProcessor
     {
         try
         {
-            if (regno.Length < 5 || brand.Length < 4 || odometer < 100 || costkm == 0 || vehicletype.Equals(string.Empty))
+            if (regno.Length < 1 || brand.Length < 1 || odometer == 0 || costkm == 0 || vehicletype.Equals(string.Empty))
                 throw new ArgumentException(error);
 
             error = string.Empty;
@@ -103,7 +103,7 @@ public class BookingProcessor
     {
         try
         {
-            if (ssn.Length < 5 || lastname.Length < 2 || lastname.Length < 2)
+            if (ssn.Length < 1 || lastname.Length < 1 || lastname.Length < 1)
                 throw new ArgumentException(error);
 
             error = string.Empty;
