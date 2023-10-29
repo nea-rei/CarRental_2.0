@@ -30,34 +30,6 @@ public class CollectionData : IData
             throw;
         }
     }
-    public int GetDailyCost(VehicleType type)
-    {
-        try
-        {
-            int dailycost = 0;
-            switch (type)
-            {
-                case VehicleType.Sedan:
-                    dailycost = 100;
-                    break;
-                case VehicleType.Van:
-                    dailycost = 300;
-                    break;
-                case VehicleType.Combi:
-                    dailycost = 200;
-                    break;
-                case VehicleType.Motorcycle:
-                    dailycost = 50;
-                    break;
-            };
-            return dailycost;
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
-    }
     public List<T> Get<T>(Func<T, bool>? lambda = null)
     {
         try

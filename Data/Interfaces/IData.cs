@@ -16,8 +16,6 @@ public interface IData
     public string[] VehicleStatusNames { get; }
     public string[] VehicleTypeNames { get; }
     VehicleType GetVehicleType(string name);
-    int GetDailyCost(VehicleType type);
-
     IBooking RentVehicle(int vehicleId, int customerId);
     IBooking ReturnVehicle(int vehicleId);
 }

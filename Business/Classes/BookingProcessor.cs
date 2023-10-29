@@ -1,7 +1,10 @@
 ﻿using Common.Classes;
 using Common.Enums;
+using Common.Exceptions;
 using Common.Interfaces;
 using Data.Interfaces;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Business.Classes;
 
@@ -39,10 +42,13 @@ public class BookingProcessor
     public BookingProcessor(IData data) => _data = data;
 
     public IEnumerable<IVehicle> GetVehicles() => _data.Get<IVehicle>();
+    public IEnumerable<IVehicle> GetVehicles(string regno) => _data.Get<IVehicle>(v => v.RegNo == regno);
     public IEnumerable<IPerson> GetCustomers() => _data.Get<IPerson>();
+    public IEnumerable<IPerson> GetCustomers(string ssn) => _data.Get<IPerson>(p => p.SSN == ssn);
     public IEnumerable<IBooking> GetBookings() => _data.Get<IBooking>();
 
     public IVehicle? GetVehicle(int vehicleId) => _data.Single<IVehicle>(v => v.Id == vehicleId);
+    public IVehicle? GetVehicle(string regno) => _data.Single<IVehicle>(v => v.RegNo == regno);
     public void Clear()
     {
         ssn = string.Empty;
@@ -65,7 +71,10 @@ public class BookingProcessor
             if (regno.Length < 1 || brand.Length < 1 || odometer == 0 || costkm == 0 || vehicletype.Equals(string.Empty))
                 throw new ArgumentException(error);
 
-            error = string.Empty;
+            var collection = GetVehicles(regno).ToList();
+
+            if (collection.Count > 0) throw new ArgumentNullException(error);
+                error = string.Empty;
 
             VehicleType vtype = GetVehicleType(vehicletype);
 
@@ -73,8 +82,7 @@ public class BookingProcessor
             {
                 var motorcycle = new Motorcycle(regno, brand, odometer, costkm, vtype, status);
 
-                var dailycost = _data.GetDailyCost(vtype);
-                motorcycle.AssignDailyCost(dailycost);
+                motorcycle.AssignDailyCost(vtype);
 
                 var id = _data.NextVehicleId;
                 motorcycle.AssignId(id);
@@ -85,8 +93,7 @@ public class BookingProcessor
             {
                 var car = new Car(regno, brand, odometer, costkm, vtype, status);
 
-                var dailycost = _data.GetDailyCost(vtype);
-                car.AssignDailyCost(dailycost);
+                car.AssignDailyCost(vtype);
 
                 var id = _data.NextVehicleId;
                 car.AssignId(id);
@@ -106,6 +113,9 @@ public class BookingProcessor
             if (ssn.Length < 1 || lastname.Length < 1 || lastname.Length < 1)
                 throw new ArgumentException(error);
 
+            var collection = GetCustomers(ssn).ToList();
+
+            if (collection.Count > 0) throw new ArgumentNullException(error);
             error = string.Empty;
 
             var customer = new Customer(ssn, lastname, firstname);
@@ -174,7 +184,6 @@ public class BookingProcessor
             return booking;
         }
     }
-
     public IVehicle UpdateVehicle(int vehicleId, double distance)
     {
         var vehicle = GetVehicle(vehicleId);

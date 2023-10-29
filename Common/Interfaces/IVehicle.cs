@@ -14,7 +14,7 @@ namespace Common.Interfaces
         public VehicleStatus Status { get; set; }
 
         void AssignId(int id);
-        void AssignDailyCost(double dailycost);
         void UpdateStatus(VehicleStatus status);
+        public void AssignDailyCost(VehicleType type);
     }
 }
