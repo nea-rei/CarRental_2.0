@@ -4,6 +4,7 @@ using Common.Interfaces;
 using Data.Interfaces;
 using Common.Exceptions;
 using System.Reflection;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Data.Classes;
 
@@ -19,6 +20,24 @@ public class CollectionData : IData
     public string[] VehicleStatusNames => Enum.GetNames(typeof(VehicleStatus));
     public string[] VehicleTypeNames => Enum.GetNames(typeof(VehicleType));
 
+    public object? GetReflection<T>()
+    {
+        try
+        {
+            var collections = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
+                ?? throw new InvalidOperationException("Unsupported type");
+
+            var value = collections.GetValue(this) ?? throw new InvalidDataException();
+
+            return value;
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
     public VehicleType GetVehicleType(string name)
     {
         try
@@ -34,11 +53,7 @@ public class CollectionData : IData
     {
         try
         {
-            var collections = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
-                .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
-                ?? throw new InvalidOperationException("Unsupported type");
-
-            var value = collections.GetValue(this) ?? throw new InvalidDataException();
+            var value = GetReflection<T>() ?? throw new InvalidDataException();
 
             var collection = ((List<T>)value).AsQueryable();
 
@@ -58,12 +73,7 @@ public class CollectionData : IData
         try
         {
             if (lambda is null) throw new DataNullException("could not find lambda expression");
-
-            var collections = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
-                .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
-                ?? throw new InvalidOperationException("Unsupported type");
-
-            var value = collections.GetValue(this) ?? throw new InvalidDataException();
+            var value = GetReflection<T>() ?? throw new InvalidDataException();
 
             var collection = ((List<T>)value).AsQueryable();
 
@@ -83,11 +93,7 @@ public class CollectionData : IData
         {
             if (item is null) throw new DataNullException("Could not add item");
 
-            var collections = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
-                .FirstOrDefault(f => f.FieldType == typeof(List<T>) && f.IsInitOnly)
-                ?? throw new InvalidOperationException("Unsupported type");
-
-            var value = collections.GetValue(this) ?? throw new InvalidDataException();
+            var value = GetReflection<T>() ?? throw new InvalidDataException();
 
             ((List<T>)value).Add(item);
         }
@@ -133,7 +139,7 @@ public class CollectionData : IData
     {
         try
         {
-            var booking = Single<IBooking>(v => v.Vehicle.Id == vehicleId && v.Cost.Equals(null));
+            var booking = Single<IBooking>(v => v.Vehicle?.Id == vehicleId && v.Cost.Equals(null));
 
             return booking ?? throw new Exception("could not find booking");
         }

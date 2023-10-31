@@ -2,6 +2,7 @@
 @using Business.Classes;
 @inject BookingProcessor bp
 
+
 <header>
     <h1 class="display-6 m-5 mx-0 text-start">Welcome to Car Rental booking!</h1>
 </header>
@@ -24,11 +25,11 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><input @bind="bp.ssn" type="text" class="form-control customer" placeholder="SSN" /></td>
-                    <td><input @bind="bp.lastname" type="text" class="form-control customer" placeholder="Last Name" /></td>
+                    <td><input @bind="bp._in.c.SSN" type="text" class="form-control customer" placeholder="SSN" /></td>
+                    <td><input @bind="bp._in.c.LastName" type="text" class="form-control customer" placeholder="Last Name" /></td>
                     <td>
-                        <input @bind="bp.firstname" type="text" class="form-control customer firstname" placeholder="First Name" />
-                        <button type="button" class="btn customer ml-auto  btn-outline-success" @onclick="(() => bp.AddCustomer(bp.ssn, bp.lastname, bp.firstname))">Add</button>
+                        <input @bind="bp._in.c.FirstName" type="text" class="form-control customer firstname" placeholder="First Name" />
+                        <button type="button" class="btn customer ml-auto  btn-outline-success" @onclick="(() => bp.AddCustomer(bp._in.c.SSN, bp._in.c.LastName, bp._in.c.FirstName))">Add</button>
                     </td>
                 </tr>
                 @foreach (var person in bp.GetCustomers())
@@ -64,22 +65,22 @@
                 <tr>
                     @if (!bp.processing)
                     {
-                        <td><input @bind="bp.regno" type="text" class="form-control vehicle" placeholder="RegNo" /></td>
-                        <td><input @bind="bp.brand" type="text" class="form-control vehicle" placeholder="Brand" /></td>
-                        <td><input @bind="bp.odometer" type="text" class="form-control vehicle" placeholder=""/></td>
-                        <td><input @bind="bp.costkm" type="text" class="form-control vehicle" placeholder="" /></td>
+                        <td><input @bind="bp._in.v.RegNo" type="text" class="form-control vehicle" placeholder="RegNo" /></td>
+                        <td><input @bind="bp._in.v.Brand" type="text" class="form-control vehicle" placeholder="Brand" /></td>
+                        <td><input @bind="bp._in.v.Odometer" type="text" class="form-control vehicle" placeholder="" /></td>
+                        <td><input @bind="bp._in.v.CostKm" type="text" class="form-control vehicle" placeholder="" /></td>
                     }
                     else
                     {
-                    <td><input @bind="bp.regno" type="text" class="form-control vehicle" placeholder="RegNo" disabled /></td>
-                    <td><input @bind="bp.brand" type="text" class="form-control vehicle" placeholder="Brand" disabled /></td>
-                    <td><input @bind="bp.odometer" type="text" class="form-control vehicle" placeholder="" disabled /></td>
-                    <td><input @bind="bp.costkm" type="text" class="form-control vehicle" placeholder="" disabled /></td>
+                        <td><input @bind="bp._in.v.RegNo" type="text" class="form-control vehicle" placeholder="RegNo" disabled /></td>
+                        <td><input @bind="bp._in.v.Brand" type="text" class="form-control vehicle" placeholder="Brand" disabled /></td>
+                        <td><input @bind="bp._in.v.Odometer" type="text" class="form-control vehicle" placeholder="" disabled /></td>
+                        <td><input @bind="bp._in.v.CostKm" type="text" class="form-control vehicle" placeholder="" disabled /></td>
                     }
                     <td>
                         @if (!bp.processing)
                         {
-                            <select class="form-select vehicletype" @bind="bp.vehicletype">
+                            <select class="form-select vehicletype" @bind="bp._in.vehicletype">
                                 <option selected hidden value="">Choose vehicle</option>
                                 @foreach (var typename in bp.VehicleTypeNames)
                                 {
@@ -89,13 +90,15 @@
                         }
                         else
                         {
-                            <select class="form-select vehicletype" disabled @bind="bp.vehicletype"></select>
+                            <select class="form-select vehicletype" disabled @bind="bp._in.vehicletype"></select>
                         }
                     </td>
                     <td class="dailycost"></td>
                     <td>
                         <button type="button" class="btn add btn-outline-success d-flex @((!bp.processing) ? " " : "disabled")" @onclick=" (() =>
-                            bp.AddVehicle(bp.regno, bp.brand, bp.odometer, bp.costkm, bp.vehicletype, bp.vehicleStatus))">Add</button>
+                            bp.AddVehicle(bp._in.v.RegNo, bp._in.v.Brand, bp._in.v.Odometer, bp._in.v.CostKm, bp._in.vehicletype, bp._in.v.Status))">
+                            Add
+                        </button>
                     </td>
                     <td>
                             <button type="button" class="btn processing btn-success position-relative
@@ -114,11 +117,11 @@
                         <td>@vehicle.VType</td>
                         <td>@vehicle.DailyCost</td>
                         <td>
-                            @if (vehicle.Status.Equals(bp.vehicleStatus))
+                            @if (vehicle.Status.Equals(bp._in.vehicleStatus))
                             {
                                 @if (!bp.processing)
                                 {
-                                    <select class="form-select rentingcustomer" @bind="bp.customer">
+                                    <select class="form-select rentingcustomer" @bind="bp._in.customer">
                                         <option selected hidden value="">Choose customer</option>
                                         @foreach (var customer in bp.GetCustomers())
                                         {
@@ -128,11 +131,11 @@
                                 }
                                 else
                                 {
-                                    <select class="form-select rentingcustomer" disabled @bind="bp.customer"></select>
+                                    <select class="form-select rentingcustomer" disabled @bind="bp._in.customer"></select>
                                 }
 
                                 <button type="button" class="btn rent btn-outline-primary @((!bp.processing) ? " " : "disabled")"
-                                @onclick=" async ()=> await bp.RentVehicle(vehicle.Id, bp.customerId)">Rent</button>
+                                @onclick=" async ()=> await bp.RentVehicle(vehicle.Id, bp._in.c.Id)">Rent</button>
                             }
                             else
                             {
@@ -152,7 +155,7 @@
                         </td>
                         <td>
                             <button type="button" class="btn status btn-success position-relative
-                                badge border-0 rounded-pill text-bg-@(vehicle.Status.Equals(bp.vehicleStatus) ? "success" : "danger")">
+                                badge border-0 rounded-pill text-bg-@(vehicle.Status.Equals(bp._in.vehicleStatus) ? "success" : "danger")">
                                 @vehicle.Status
                             </button>
                         </td>
@@ -182,12 +185,12 @@
                 @foreach (var booking in bp.GetBookings())
                 {
                     <tr>
-                        <th class="fw-bold">@booking.Vehicle.RegNo</th>
-                        <td>@booking.Person.FullName</td>
+                        <th class="fw-bold">@booking.Vehicle?.RegNo</th>
+                        <td>@booking.Person?.FullName</td>
                         <td>
-                            @if (booking.Status.Equals(bp.vehicleStatus))
+                            @if (booking.Status.Equals(bp._in.vehicleStatus))
                                     @booking.StartKm
-                            else    @booking.Vehicle.Odometer
+                            else    @booking.Vehicle?.Odometer
                         </td>
                         <td>@booking.ReturnedKm</td>
                         <td>@booking.RentalDate.ToString("dd'/'MM'/'yyyy")</td>
@@ -195,8 +198,8 @@
                         <td>@booking.Cost</td>
                         <td>
                             <button type="button" class="btn booking btn-sm position-relative
-                                btn-@(booking.Status.Equals(bp.vehicleStatus) ? "success" : "primary")">
-                                @(booking.Status.Equals(bp.vehicleStatus) ? "Returned" : "Open")
+                                btn-@(booking.Status.Equals(bp._in.vehicleStatus) ? "success" : "primary")">
+                                @(booking.Status.Equals(bp._in.vehicleStatus) ? "Returned" : "Open")
                             </button>
                         </td>
                     </tr>

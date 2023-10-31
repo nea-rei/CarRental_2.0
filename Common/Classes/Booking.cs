@@ -7,17 +7,18 @@ namespace Common.Classes;
 public class Booking : IBooking
 {
     public int Id { get; private set; }
-    public string RegNo { get; init; } = string.Empty;
-    public IPerson Person { get; init; }
-    public IVehicle Vehicle { get; init; }
+    public string RegNo { get; set; } = string.Empty;
+    public IPerson? Person { get; set; } 
+    public IVehicle? Vehicle { get; set; }
     public double StartKm { get; set; }
     public double? ReturnedKm { get; set; }
-    public DateTime RentalDate { get; init; }
+    public DateTime RentalDate { get; set; }
     public DateTime? ReturnDate { get; set; }
     public VehicleStatus Status { get; set; }
     public double? Cost { get; private set; }
 
     public void AssignId(int id) => Id = id;
+    public Booking() { }
     public Booking(IPerson person, IVehicle vehicle, DateTime rentaldate)
     {
 
@@ -41,8 +42,8 @@ public class Booking : IBooking
         ReturnedKm = returnedkm ;
         Status = vehicle.Status;
     }
-    public void ReturnVehicle(IVehicle vehicle)
+    public void ReturnVehicle(IVehicle? vehicle)
     {
-        Cost = (ReturnDate?.Duration(RentalDate) * vehicle.DailyCost) + ((ReturnedKm - vehicle.Odometer) * vehicle.CostKm);
+        Cost = (ReturnDate?.Duration(RentalDate) * vehicle?.DailyCost) + ((ReturnedKm - vehicle?.Odometer) * vehicle?.CostKm);
     }
 }

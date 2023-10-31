@@ -1,8 +1,8 @@
 ﻿using Common.Enums;
 using Common.Interfaces;
+using System.Text.RegularExpressions;
 
 namespace Common.Classes;
-
 public class Car : Vehicle
 {
     public Car(int id, string regno, string brand, double odometer, double costkm,
@@ -11,4 +11,5 @@ public class Car : Vehicle
     public Car(string regno, string brand, double odometer, double costkm,
         VehicleType vtype, VehicleStatus status) :
         base(regno, brand, odometer, costkm, vtype, status) { }
+    public Car() { }
 }

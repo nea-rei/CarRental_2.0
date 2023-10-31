@@ -1,45 +1,24 @@
 ﻿using Common.Classes;
 using Common.Enums;
-using Common.Exceptions;
 using Common.Interfaces;
 using Data.Interfaces;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Business.Classes;
 
 public class BookingProcessor
 {
     private readonly IData _data;
+    public InputValues _in;
 
     public string error = string.Empty;
-
-    /*CUSTOMER*/
-    public string ssn = string.Empty;
-    public string lastname = string.Empty;
-    public string firstname = string.Empty;
-
-    /*BOOKING*/
-    public string customer = string.Empty;
-    public string _distance = string.Empty;
     public bool processing = false;
-    public int customerId;
-
-    /*VEHICLE*/
-    public double odometer;
-    public double costkm;
-    public double dailycost;
-    public string regno = string.Empty;
-    public string brand = string.Empty;
-    public string? vehicletype = string.Empty;
-
-    public VehicleStatus vehicleStatus = VehicleStatus.Available;
+    public string _distance = string.Empty;
 
     public string[] VehicleStatusNames => _data.VehicleStatusNames;
     public string[] VehicleTypeNames => _data.VehicleTypeNames;
     public VehicleType GetVehicleType(string name) => _data.GetVehicleType(name);
 
-    public BookingProcessor(IData data) => _data = data;
+    public BookingProcessor(IData data, InputValues inputValues) => (_data, _in) = (data, inputValues);
 
     public IEnumerable<IVehicle> GetVehicles() => _data.Get<IVehicle>();
     public IEnumerable<IVehicle> GetVehicles(string regno) => _data.Get<IVehicle>(v => v.RegNo == regno);
@@ -51,17 +30,7 @@ public class BookingProcessor
     public IVehicle? GetVehicle(string regno) => _data.Single<IVehicle>(v => v.RegNo == regno);
     public void Clear()
     {
-        ssn = string.Empty;
-        lastname = string.Empty;
-        firstname = string.Empty;
-        odometer = 0;
-        costkm = 0;
-        regno = string.Empty;
-        brand = string.Empty;
-        vehicletype = string.Empty;
         _distance = string.Empty;
-        customer = string.Empty;
-        customerId = 0;
     }
     public void AddVehicle(string regno, string brand,
         double odometer, double costkm, string vehicletype, VehicleStatus status)
@@ -76,7 +45,7 @@ public class BookingProcessor
             if (collection.Count > 0) throw new ArgumentNullException(error);
                 error = string.Empty;
 
-            VehicleType vtype = GetVehicleType(vehicletype);
+            VehicleType vtype = GetVehicleType(_in.vehicletype);
 
             if (vtype.Equals(VehicleType.Motorcycle))
             {
@@ -104,7 +73,7 @@ public class BookingProcessor
         {
             error = "could not add vehicle";
         }
-        Clear();
+        _in.Clear();
     }
     public void AddCustomer(string ssn, string lastname, string firstname)
     {
@@ -127,7 +96,7 @@ public class BookingProcessor
         {
             error = "could not add customer";
         }
-        Clear();
+        _in.Clear();
     }
     public async Task<IBooking?> RentVehicle(int vehicleId, int customerId)
     {
@@ -137,13 +106,13 @@ public class BookingProcessor
 
         try
         {
-            customerId = Convert.ToInt32(customer);
+            customerId = Convert.ToInt32(_in.customer);
             if (vehicleId < 1 || customerId < 1) throw new ArgumentException(error);
             processing = true;
             await Task.Delay(5000);
             booking = await Task.Run(() => _data.RentVehicle(vehicleId, customerId));
             processing = false;
-            Clear();
+            _in.Clear();
             return booking ?? throw new Exception("Could not rent vehicle");
         }
         catch
@@ -168,11 +137,12 @@ public class BookingProcessor
 
             if (booking is not null)
             {
-                booking.ReturnedKm = (distance + booking.Vehicle.Odometer);
+                booking.ReturnedKm = (distance + booking.Vehicle?.Odometer);
                 booking.ReturnDate = DateTime.Now;
                 booking.Status = VehicleStatus.Available;
                 booking.ReturnVehicle(booking.Vehicle);
-                booking.StartKm = (double)(booking.ReturnedKm - distance);
+                if (booking.ReturnedKm is null || distance == 0) throw new ArgumentException(error);
+                    booking.StartKm = (double)(booking.ReturnedKm - distance);
             }
             UpdateVehicle(vehicleId, distance);
             Clear();

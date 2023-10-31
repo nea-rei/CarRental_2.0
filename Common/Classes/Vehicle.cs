@@ -7,22 +7,22 @@ namespace Common.Classes;
 public abstract class Vehicle : IVehicle
 {
     public int Id { get; private set; }
-    public string RegNo { get; init;  } = string.Empty;
-    public string Brand { get; init; } = string.Empty;
+    public string RegNo { get; set;  } = string.Empty;
+    public string Brand { get; set; } = string.Empty;
     public double Odometer { get; set; }
-    public double CostKm { get; init; }
+    public double CostKm { get; set; }
     public double DailyCost { get; private set; }
-    public VehicleType VType { get; init; }
+    public VehicleType VType { get; set; }
     public VehicleStatus Status { get; set; } = default;
 
     public void AssignId(int id) => Id = id;
-    //public void AssignDailyCost(double dailycost) => DailyCost = dailycost;
     public void UpdateStatus(VehicleStatus status) => Status = status;
 
     public void AssignDailyCost(VehicleType type)
     {
         DailyCost = type.GetDailyCost();
     }
+    public Vehicle() { }
     protected Vehicle(int id, string regno, string brand, double odometer,
         double costkm, double dailycost, VehicleType vtype, VehicleStatus status)
     {
@@ -47,5 +47,4 @@ public abstract class Vehicle : IVehicle
         VType = vtype;
         Status = status;
     }
-
 }
